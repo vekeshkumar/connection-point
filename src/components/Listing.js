@@ -162,12 +162,12 @@ class Listing extends React.Component {
                                         <p className='card-text small text-start'>{card.description}</p>
                                     </div>
                                     <div className='card-footer fs-6'>
-                                        <div class="row g-0">
-                                            <div class="col-6 col-md-6 text-start">
+                                        <div className="row g-0">
+                                            <div className="col-6 col-md-6 text-start">
                                                 <div>{card.money}</div>
                                                 <div className='card-footer-sub-text'>Raised</div>
                                             </div>
-                                            <div class="col-6 col-md-6 text-end">
+                                            <div className="col-6 col-md-6 text-end">
                                                 <div>{card.days}</div>
                                                 <div className='card-footer-sub-text'>days left</div>
                                             </div>
