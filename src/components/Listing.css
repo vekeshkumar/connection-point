@@ -1,6 +1,11 @@
 /*Styles for Listing  with Sort and Search*/
-
-.card-title{
+.card{
+    min-height: 26.75rem;
+}
+.height-card-formatter{
+    min-height: 10 rem;
+}
+.title-card{
     color: #222222;
 }
 .card-text{

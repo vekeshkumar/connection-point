@@ -7,24 +7,35 @@ class Listing extends React.Component {
     constructor(props) {
         super(props); //super class to include the props
         this.state = {
-            campaignsDetails: [],  //setting the javascript json object to react array to be used
             isLoading: true,
+            campaignsDetails: [],  //setting the javascript json object to react array to be used            
             filterDetails: [],
             searchValue: '',
-            sortOption: {}
+            sortedFilter: {},
+            currency: {
+                "USD": "$",
+                "CHF": "Fr",
+                "CAD": "$",
+                "GBP": "£",
+                "EUR": "€"
+            }
         };
-        this.sortOptionValue = [{
-            id: 1, displayName: 'Title (Desc)', sort: 'desc'
-        },
-        {
-            id: 2, displayName: 'Title(Asc)', sort: 'asc'
-        },
-        {
-            id: 3, displayName: 'Total Raised(Desc)', sort: 'desc'
-        },
-        {
-            id: 4, displayName: 'Total Raised(Asc)', sort: 'asc'
-        }];
+        this.sortOptionValue = [
+            {
+                id: 5, displayName: 'Sort By (Default)', sort: 'desc'
+            },
+            {
+                id: 1, displayName: 'Title (Desc)', sort: 'desc'
+            },
+            {
+                id: 2, displayName: 'Title (Asc)', sort: 'asc'
+            },
+            {
+                id: 3, displayName: 'Total Raised (Desc)', sort: 'desc'
+            },
+            {
+                id: 4, displayName: 'Total Raised (Asc)', sort: 'asc'
+            }];
         this.handleSortChange = this.handleSortChange.bind(this)
         this.handleSearchChange = this.handleSearchChange.bind(this)
     }
@@ -37,10 +48,13 @@ class Listing extends React.Component {
                     ...this.state,
                     campaignsDetails: responseObj.entries,
                     isLoading: false,
-                    filterDetails: [...responseObj.entries]
+                    filterDetails: [...responseObj.entries],
+                    sortedFilter: {
+                        id: 1, displayName: 'Title (asc)', sort: 'asc'
+                    }
                 });
             }).then(() => {
-                var updatedList = this.state.campaignsDetails.forEach(element => {
+                this.state.campaignsDetails.forEach(element => {
                     if (element.deadline) {
                         element.days = this.formatDate(element.deadline);
                     }
@@ -48,29 +62,29 @@ class Listing extends React.Component {
                         element.money = this.formatCurrency(element.total_raised, element.currency)
                     }
                     this.setState({
-                        ...this.state,
-                        campaignsDetails: updatedList
+                        ...this.state
+                        //calling the search
                     })
-
                 });
+                this.handleSortChange(this.state.sortedFilter);
             })
     }
     //date function for calculation of remaining or elapsed time
     formatDate(time) {
-        let dayString = '0 day left';
+        let dayValue = 0;
         var now = Math.abs(new Date() / 1000);
         var diff = (now - time);
         var days = Math.abs(Math.round((diff) / (3600 * 24)));
         //daysObject[0].text = days<0? 'days running': 'days left';
-        dayString = days < 0 ? (-days) : days;
+        dayValue = days < 0 ? (-days) : days;
 
-        return dayString;
+        return dayValue;
     }
     formatCurrency(amt, currency) {
         //currency list 
         //var currencyList = ["en-US","en-IN","en-CA","jp-JP"]
-       // new Intl.NumberFormat('zh-CN', { style: 'currency', currency: currency }).format(amt)
-        return new Intl.NumberFormat().format(amt) +" "+ currency;
+        // new Intl.NumberFormat('zh-CN', { style: 'currency', currency: currency }).format(amt)
+        return (this.state.currency[currency]) + (amt / 1000).toFixed(1).toString() + "k";
     }
 
     //Sort functionality
@@ -82,18 +96,21 @@ class Listing extends React.Component {
     sortByFund(x, y) {
         return (x.total_raised - y.total_raised)
     }
-    //OnChange function for the search
+    //OnChange function for the sort
     handleSortChange(selectedOption) {
-        let data = this.state.campaignsDetails;
+        let data = [...this.state.campaignsDetails];
         //nested ternary operation for ascending and descending operations
-        data = (selectedOption.id === 1 || selectedOption.id === 2) ? (selectedOption.sort === 'asc' ? data.sort(this.sortByTitle) : data.sort(this.sortByTitle).reverse()) :
-            (selectedOption.sort === 'asc' ? data.sort(this.sortByFund) : data.sort(this.sortByFund).reverse());
-
+        if (selectedOption.id !== 5) {
+            data = (selectedOption.id === 1 || selectedOption.id === 2) ? (selectedOption.sort === 'asc' ? data.sort(this.sortByTitle) : data.sort(this.sortByTitle).reverse()) :
+                (selectedOption.sort === 'asc' ? data.sort(this.sortByFund) : data.sort(this.sortByFund).reverse());
+        }
         this.setState({
             ...this.state,
-            filterDetails: data //calling the sort
+            filterDetails: data, //calling the sort
+            sortedFilter: selectedOption
         })
     }
+    //Onchange function for the search
     handleSearchChange(event) {
         let value = event.target.value.toLowerCase();
         if (value !== '') {
@@ -116,15 +133,14 @@ class Listing extends React.Component {
     //sorting 
     render() {
         const { isLoading, filterDetails } = this.state;
-        console.log(filterDetails)
         //include a loding symbol or loading component for now simple text
         if (isLoading) return <div>
             <h5 className='loading-txt'>Please wait, until we render the information to you :)</h5>
         </div>;
         return (
             <React.Fragment>
-                <section className='container'>
-                    <div className='input-group mb-3 '>
+                <section className='container-fluid'>
+                    <div className='input-group my-4'>
                         <InputGroup>
                             {/* Search */}
                             <FormControl type="text" placeholder="Search here!!" onChange={(e) => this.handleSearchChange(e)} />
@@ -132,7 +148,7 @@ class Listing extends React.Component {
                             <Dropdown variant="outline-secondary" title="Dropdown" id="input-group-dropdown-3">
                                 <Dropdown.Toggle variant="light" id="dropdown-basic" className="btn border bg-white py-2">
                                     <span className="pe-5 me-5 fs-6 fw-bold text-capitalize" id="shared-usage-card-selected-usage-type">
-                                        Sort By
+                                        {this.state.sortedFilter.displayName}
                                     </span>
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu className="m-0 p-0 w-100" value={this.sortOptionValue[0]}>
@@ -154,23 +170,23 @@ class Listing extends React.Component {
                     {/* Listing  */}
                     <div className='row'>
                         {filterDetails.map((card) => (
-                            <div className='col-lg-4 col-md-4 col-xs-4 col-sm-4 mb-3 pe-0'>
-                                <div className='card h-100'>
-                                    <img src={card.image_url} className='card-img-top' alt='..' />
-                                    <div className='card-body'>
-                                        <a className='card-title fs-5 text-start  fw-bold text-decoration-none' href={card.url}>{card.title}</a>
-                                        <p className='card-text small text-start'>{card.description}</p>
+                            <div className='col-md-4 col-sm-6 mb-3 col-xl-3'>
+                                <div className='card h-100 border border-1  rounded'>
+                                    <div className='height-card-formatter'>
+                                        <img src={card.image_url} className='card-img-top' alt='..' />
                                     </div>
-                                    <div className='card-footer fs-6'>
-                                        <div className="row g-0">
-                                            <div className="col-6 col-md-6 text-start">
-                                                <div>{card.money}</div>
-                                                <div className='card-footer-sub-text'>Raised</div>
-                                            </div>
-                                            <div className="col-6 col-md-6 text-end">
-                                                <div>{card.days}</div>
-                                                <div className='card-footer-sub-text'>days left</div>
-                                            </div>
+                                    <div className='card-body overflow-hidden height-card-formatter'>
+                                        <a className='title-card p-0 lh-1 fs-5 fw-bold text-start text-decoration-none' href={card.url}>{card.title}</a>
+                                        <p className='card-text small text-start'>{card.description}</p>
+                                    </div>                                    
+                                    <div className="d-flex flex-wrap justify-content-between px-4 py-2 card-footer fs-6">
+                                        <div className="d-flex flex-wrap flex-column justify-content-center align-items-center">
+                                            <div>{card.money}</div>
+                                            <div className='card-footer-sub-text'>Raised</div>
+                                        </div>
+                                        <div className="d-flex flex-wrap flex-column justify-content-center align-items-center">
+                                            <div>{card.days ? card.days : 0}</div>
+                                            <div className='card-footer-sub-text'>days left</div>
                                         </div>
                                     </div>
                                 </div>
