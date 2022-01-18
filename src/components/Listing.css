@@ -1,0 +1,15 @@
+/*Styles for Listing  with Sort and Search*/
+
+.card-title{
+    color: #222222;
+}
+.card-text{
+    color: #666666;
+}
+.card-footer{
+    background-color:#222222;
+    color :#F4F4F4;
+}
+.card-footer-sub-text{
+    color : #888888;
+}
