@@ -40,17 +40,14 @@ class Listing extends React.Component {
                     filterDetails: [...responseObj.entries]
                 });
             }).then(() => {
-                var updatedList = this.state.campaignsDetails.forEach(element => {
+                this.state.campaignsDetails.forEach(element => {
                     if (element.deadline) {
                         element.days = this.formatDate(element.deadline);
                     }
                     if (element.total_raised && element.currency) {
                         element.money = this.formatCurrency(element.total_raised, element.currency)
                     }
-                    this.setState({
-                        ...this.state,
-                        campaignsDetails: updatedList
-                    })
+                    
 
                 });
             })
@@ -116,7 +113,7 @@ class Listing extends React.Component {
     //sorting 
     render() {
         const { isLoading, filterDetails } = this.state;
-        console.log(filterDetails)
+        //console.log(filterDetails)
         //include a loding symbol or loading component for now simple text
         if (isLoading) return <div>
             <h5 className='loading-txt'>Please wait, until we render the information to you :)</h5>
