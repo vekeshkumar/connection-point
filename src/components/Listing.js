@@ -43,9 +43,8 @@ class Listing extends React.Component {
     componentDidMount() {
         fetch('https://static.fundrazr.com/assignment/campaigns.json').then((response) => response.json())
             .then((responseObj) => {
-
                 this.setState({
-                    ...this.state,
+                    ...this.state, //state is being updated using the spread operator
                     campaignsDetails: responseObj.entries,
                     isLoading: false,
                     filterDetails: [...responseObj.entries],
@@ -60,11 +59,7 @@ class Listing extends React.Component {
                     }
                     if (element.total_raised && element.currency) {
                         element.money = this.formatCurrency(element.total_raised, element.currency)
-                    }
-                    this.setState({
-                        ...this.state
-                        //calling the search
-                    })
+                    }                    
                 });
                 this.handleSortChange(this.state.sortedFilter);
             })
@@ -133,6 +128,7 @@ class Listing extends React.Component {
     //sorting 
     render() {
         const { isLoading, filterDetails } = this.state;
+        //console.log(filterDetails)
         //include a loding symbol or loading component for now simple text
         if (isLoading) return <div>
             <h5 className='loading-txt'>Please wait, until we render the information to you :)</h5>
