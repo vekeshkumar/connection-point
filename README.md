@@ -1,4 +1,8 @@
 # CONNECTION POINT - FUND RAZR - Campaign Listing
+Also this code is deployed in heroku : 
+https://connection-point.herokuapp.com/
+Since its a free hosting, it might take while to load the page.
+
 This project is bootstrapped with React Framework and included Bootstrap for style
 
 ## Prerequisite for the  running this code in the local:
@@ -20,7 +24,7 @@ Listing is the react component created and it contains functions which has the l
 Class listing is created and inside that,a constructor  is created in which state and some objects are initalized.
 ComponentDidMount() is the  react function  where the fetch javascript function is called to get the json object
 
-### formaDate() :
+### formatDate() :
 javascript function returns the formatted date for the given input
 ### formatCurrency():
 javascript function returns the formatted currency for the given input
@@ -36,6 +40,4 @@ this function contains all logic and operations related to search functionality.
 ### render():
 it contains all the html and the js binding to show in the view.
 
-Also this code is deployed in heroku : 
-https://connection-point.herokuapp.com/
-Since its a free hosting, it might take while to load the page.
+
